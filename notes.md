@@ -9,3 +9,6 @@
 - `mw` - main window object
     - `mw.col` currently open collection
 - `aqt` - Anki Qt, based on PyQt. GUI functionality for Anki
+
+## Random
+- to grant permission to execute a bash script: `chmod +x $filename`

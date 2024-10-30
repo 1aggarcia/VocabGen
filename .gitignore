@@ -3,5 +3,6 @@ bin/
 lib/
 pyvenv.cfg
 
-# mac stuff
+# other artifacts
 .DS_Store
+__pycache__/
