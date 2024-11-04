@@ -1,3 +1,6 @@
+example/
+build
+
 # venv stuff
 bin/
 lib/
