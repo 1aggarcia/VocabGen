@@ -4,14 +4,14 @@ Anki only takes commands from this file
 # TODO: change venv version to 3.9
 
 from aqt import mw, gui_hooks
+assert mw is not None
 from aqt.webview import WebContent
 from aqt.utils import showInfo
 from aqt.qt import qconnect
 from aqt.qt import QAction
 
-from . import vocabcard
-
-assert mw is not None
+from .vocabcard import Language
+from .dictionary import generate_flashcard
 
 
 def main():
@@ -20,22 +20,19 @@ def main():
     qconnect(action.triggered, test_action)
     mw.form.menuTools.addAction(action)
 
-    # setup card add
-    # gui_hooks.add_cards_did_init.append(on_card_add)
-
     # setup web content
     gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
 
 
 def test_action():
-    card_count = mw.col.cardCount()
-    showInfo(f"card_count: {card_count}")
+    print("getting card from dictionary...")
+    card = generate_flashcard(Language.ES, Language.IT, "nevar")
+    print(card)
+    showInfo(str(card))
 
 
 def on_card_add(cards):
     print(f"card added {cards}")
-    card = vocabcard.generate_flashcard("palabra", vocabcard.Language.ES, vocabcard.Language.IT)
-    showInfo(str(card))
 
 
 # TODO: only change UI for editor

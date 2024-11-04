@@ -6,27 +6,28 @@ class Language(Enum):
     """
     All supported languages
     """
-    EN = "EN",
-    ES = "ES",
+    EN = "EN"
+    ES = "ES"
     IT = "IT"
+
+    @property
+    def wordreference_code(self):
+        # wordreference uses lowercase codes
+        return self.value.lower()
+
+
+@dataclass
+class VocabCardQuery:
+    source_lang: Language
+    target_lang: Language
+    word: str
 
 
 @dataclass
 class VocabCard:
     source_lang: Language
-    word: str
     target_lang: Language
+    word: str
     translation: str
     example_sentence: str
     ipa_transcription: str
-
-
-def generate_flashcard(word: str, source_lang: Language, target_lang: Language) -> VocabCard:
-    return VocabCard(
-        source_lang=source_lang,
-        target_lang=target_lang,
-        word=word,
-        translation="translation",
-        example_sentence="the quick brown fox jumps over the lazy dog",
-        ipa_transcription="/wɝd/"
-    )
