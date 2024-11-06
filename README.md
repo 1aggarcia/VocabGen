@@ -1,4 +1,4 @@
-# Untitled Anki Add-on for language learning 
+# VocabGen for Anki
 
 ## Overview
 Studying vocabulary for a foreign language is difficult for various reasons.
@@ -38,8 +38,7 @@ since those are the only languages I have studied at depth.
 
 ## Setup and Build
 
-This add-on is developed in Python 3.9 (the version Anki runs). I recommend working in a virtual enviornment
-to keep Anki-related dependencies seperate from the rest of your system
+This add-on is developed in Python 3.9 (the version Anki runs). I recommend working in a virtual enviornment to keep Anki-related dependencies seperate from the rest of your system
 
 To install dependencies (when cloning repo)
 ```
