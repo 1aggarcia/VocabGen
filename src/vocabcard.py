@@ -9,6 +9,7 @@ class Language(Enum):
     EN = "EN"
     ES = "ES"
     IT = "IT"
+    FR = "FR"
 
     @property
     def wordreference_code(self):
