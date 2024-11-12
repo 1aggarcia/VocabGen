@@ -16,6 +16,9 @@ class Language(Enum):
         # wordreference uses lowercase codes
         return self.value.lower()
 
+    def __repr__(self):
+        return self.name
+
 
 @dataclass
 class VocabCardQuery:

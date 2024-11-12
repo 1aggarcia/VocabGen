@@ -7,14 +7,15 @@ from aqt.editor import Editor
 from aqt.webview import WebContent
 from aqt import utils
 from aqt.qt import qconnect
-from aqt.qt import QAction
+from PyQt6.QtGui import QAction
 
 from .vocabcard import Language
 from .dictionary import generate_flashcard
 
 
 def main():
-    # setup test action
+    # QAction constructor below causes segmentation fault
+    # comment these lines out to run unit tests
     action = QAction("test dictionary directly", mw)
     qconnect(action.triggered, on_test_dictionary)
     mw.form.menuTools.addAction(action)
@@ -26,6 +27,10 @@ def main():
 def on_test_dictionary():
     query_word = utils.getOnlyText("Enter a word to translate to Italian")
     italian_card = generate_flashcard(Language.EN, Language.IT, query_word)
+    if italian_card is None:
+        utils.show_warning(f"Failed to generate a flashcard for '{query_word}'")
+        return
+
     utils.show_info(
         "word: " + italian_card.word
         + "\n\ntranslation: " + italian_card.translation

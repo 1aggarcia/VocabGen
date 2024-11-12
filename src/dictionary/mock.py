@@ -2,9 +2,14 @@
 Mock flashcard generator for testing
 """
 
+from typing import Optional
 from ..vocabcard import Language, VocabCard
 
-def generate_flashcard(source_lang: Language, target_lang: Language, word: str) -> VocabCard:
+def generate_flashcard(
+        source_lang: Language,
+        target_lang: Language,
+        word: str
+    ) -> Optional[VocabCard]:
     return VocabCard(
         word=word,
         source_lang=source_lang,
