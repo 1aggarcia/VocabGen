@@ -15,6 +15,9 @@
 ## Hooks
 The recommended way to connect code to Anki
 `aqt.gui_hooks` allows you to hook on to GUI events
+- hooks ref:
+    - https://github.com/ankitects/anki/blob/main/pylib/tools/genhooks.py
+    - https://github.com/ankitects/anki/blob/main/qt/tools/genhooks_gui.py
 
 
 ## Random

@@ -1,12 +1,11 @@
 """
 Anki only takes commands from this file
 """
-# TODO: change venv version to 3.9
 
 from aqt import mw, gui_hooks
-assert mw is not None
+from aqt.editor import Editor
 from aqt.webview import WebContent
-from aqt.utils import showInfo
+from aqt import utils
 from aqt.qt import qconnect
 from aqt.qt import QAction
 
@@ -16,32 +15,46 @@ from .dictionary import generate_flashcard
 
 def main():
     # setup test action
-    action = QAction("test action", mw)
-    qconnect(action.triggered, test_action)
+    action = QAction("test dictionary directly", mw)
+    qconnect(action.triggered, on_test_dictionary)
     mw.form.menuTools.addAction(action)
 
     # setup web content
     gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
 
 
-def test_action():
-    print("getting card from dictionary...")
-    card = generate_flashcard(Language.ES, Language.IT, "nevar")
-    print(card)
-    showInfo(str(card))
-
+def on_test_dictionary():
+    query_word = utils.getOnlyText("Enter a word to translate to Italian")
+    italian_card = generate_flashcard(Language.EN, Language.IT, query_word)
+    utils.show_info(
+        "word: " + italian_card.word
+        + "\n\ntranslation: " + italian_card.translation
+        + "\n\nexample_sentence: " + italian_card.example_sentence
+        + "\n\nipa_transcription: " + italian_card.ipa_transcription
+    )
 
 def on_card_add(cards):
     print(f"card added {cards}")
 
 
 # TODO: only change UI for editor
+
 def on_webview_will_set_content(web_content: WebContent, context):
-    print("")
+    print("ON_WEBVIEW_WILL_SET_CONTENT")
     print(type(web_content))
     print(type(context))
     print(context)
-    web_content.body  = "<i>demo add-on in use</i>" + web_content.body
+
+    if not isinstance(context, Editor):
+        return
+    editor: Editor = context
+
+    try:
+        web_content.body = "<h1>START OF CONTENT</h1>" \
+            + web_content.body \
+            + "<h1>END OF CONTENT</h1>"
+    except Exception as e:
+        utils.show_critical(str(e))
 
 
 main()
