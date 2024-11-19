@@ -7,10 +7,26 @@ class Language(Enum):
     """
     All supported languages
     """
+    # these language codes are taken from https://www.wordreference.com,
+    # so it should support them all
     EN = "English"
-    ES = "Español"
-    IT = "Italiano"
-    FR = "Français"
+    ES = "Spanish"
+    IT = "Italian"
+    FR = "French"
+    PT = "Portugese"
+    DE = "German"
+    NL = "Dutch"
+    RU = "Russian"
+    PL = "Polish"
+    RO = "Romanian"
+    CZ = "Czech"
+    GR = "Greek"
+    TK = "Turkish"
+    ZH = "Chinese"
+    JA = "Japanese"
+    KO = "Korean"
+    AR = "Arabic"
+    IS = "Icelandic"
 
     @property
     def wordreference_code(self):

@@ -24,6 +24,7 @@ def generate_flashcard(
     query = VocabCardQuery(source_lang, target_lang, word)
     url = _format_wordreference_url(query)
     try:
+        print(f"querying {url}")
         webpage = requests.get(url, timeout=TIMEOUT_SECONDS)
     except requests.exceptions.Timeout as e:
         print("Timeout occurred when reaching wordreference:", e)
