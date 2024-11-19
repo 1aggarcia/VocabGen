@@ -74,11 +74,15 @@ def on_search_clicked(*,
     if deck is None:
         return
 
+    source_lang = Language.lookup(source_lang_input)
+    target_lang = Language.lookup(target_lang_input)
+
+    if source_lang is None or target_lang is None:
+        raise ValueError(f"Language(s) does not exist: {source_lang} | {target_lang}")
+
     query = VocabCardQuery(
-        # TODO: add safe get_by_value method to enum
-        # (this will raise an error if the value doesnt exist)
-        source_lang=Language(source_lang_input),
-        target_lang=Language(target_lang_input),
+        source_lang=source_lang,
+        target_lang=target_lang,
         word=word_input
     )
     print(f"starting query for {str(query)}")

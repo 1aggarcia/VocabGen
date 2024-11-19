@@ -1,5 +1,6 @@
 from enum import Enum
 from dataclasses import dataclass
+from typing import Optional
 
 
 class Language(Enum):
@@ -15,6 +16,18 @@ class Language(Enum):
     def wordreference_code(self):
         # wordreference uses lowercase codes
         return self.name.lower()
+
+    @staticmethod
+    def lookup(value: str) -> Optional['Language']:
+        """
+        Returns the enum member by its value, or `None` if no such member exists.
+
+        Wrapper for `Language(value)` that does not throw an error.
+        """
+        try:
+            return Language(value)
+        except ValueError:
+            return None
 
     def __repr__(self):
         return self.name
