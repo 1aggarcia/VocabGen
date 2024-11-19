@@ -2,26 +2,27 @@
 Anki only takes commands from this file
 """
 
-from aqt import mw, gui_hooks
-from aqt.editor import Editor
-from aqt.webview import WebContent
-from aqt import utils
-from aqt.qt import qconnect
-from PyQt6.QtGui import QAction
+from sys import stderr
+
+from aqt.main import AnkiQt
+from aqt import mw as mw_maybe_missing
+from aqt import utils, qt
 
 from .vocabcard import Language
+from .flashcards.window import open_editor
 from .dictionary import generate_flashcard
 
 
-def main():
+def main(mw: AnkiQt):
     # QAction constructor below causes segmentation fault
     # comment these lines out to run unit tests
-    action = QAction("test dictionary directly", mw)
-    qconnect(action.triggered, on_test_dictionary)
+    action = qt.QAction("test dictionary directly", mw)
+    qt.qconnect(action.triggered, on_test_dictionary)
     mw.form.menuTools.addAction(action)
 
-    # setup web content
-    gui_hooks.webview_will_set_content.append(on_webview_will_set_content)
+    action = qt.QAction("Enter New Vocab Word", mw)
+    qt.qconnect(action.triggered, lambda: open_editor(mw))
+    mw.form.menuTools.addAction(action)
 
 
 def on_test_dictionary():
@@ -38,28 +39,8 @@ def on_test_dictionary():
         + "\n\nipa_transcription: " + italian_card.ipa_transcription
     )
 
-def on_card_add(cards):
-    print(f"card added {cards}")
 
-
-# TODO: only change UI for editor
-
-def on_webview_will_set_content(web_content: WebContent, context):
-    print("ON_WEBVIEW_WILL_SET_CONTENT")
-    print(type(web_content))
-    print(type(context))
-    print(context)
-
-    if not isinstance(context, Editor):
-        return
-    editor: Editor = context
-
-    try:
-        web_content.body = "<h1>START OF CONTENT</h1>" \
-            + web_content.body \
-            + "<h1>END OF CONTENT</h1>"
-    except Exception as e:
-        utils.show_critical(str(e))
-
-
-main()
+if mw_maybe_missing is not None:
+    main(mw_maybe_missing)
+else:
+    print("ERROR: Anki main window is missing. Quitting add-on.", file=stderr)

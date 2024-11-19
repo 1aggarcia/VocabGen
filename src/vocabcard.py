@@ -20,14 +20,14 @@ class Language(Enum):
         return self.name
 
 
-@dataclass
+@dataclass(frozen=True)
 class VocabCardQuery:
     source_lang: Language
     target_lang: Language
     word: str
 
 
-@dataclass
+@dataclass(frozen=True)
 class VocabCard:
     source_lang: Language
     target_lang: Language
@@ -35,3 +35,10 @@ class VocabCard:
     translation: str
     example_sentence: str
     ipa_transcription: str
+
+    def __str__(self):
+        return (
+            f"<h1>{self.translation}</h1>"
+            f"<i>{self.ipa_transcription}</i>"
+            f"<p>{self.example_sentence}</p>"
+        )
