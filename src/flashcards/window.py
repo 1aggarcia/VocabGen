@@ -7,7 +7,8 @@ from aqt import qt
 from aqt.utils import show_critical, show_info
 
 from ..dictionary import generate_flashcard
-from ..vocabcard import Language, VocabCard
+from ..vocabcard import Language, VocabCard, VocabCardQuery
+
 
 def open_editor(mw: AnkiQt):
     """
@@ -15,63 +16,87 @@ def open_editor(mw: AnkiQt):
     Args:
         mw : Main Anki window
     """
-    # dependencies to insert a card
-    sample_card = generate_flashcard(Language.ES, Language.IT, "parola")
-    if sample_card is None:
-        show_critical("Failed to generate flashcard")
-        return
-
     col = mw.col
     if col is None:
         show_critical("ERROR: mw.col is None")
         return
 
-    model = col.models.current()
-    fields = model["flds"]
-    print(f"model fields: {fields}")
-
-    deck = col.decks.by_name("Italiano")
-    if deck is None:
-        raise RuntimeError("deck does not exist")
-
-    decks_to_string = "\n".join([
-        f"{deck['id']}: {deck['name']}"
-        for deck in mw.col.decks.all()
-    ])
-
     # components
-    label = qt.QLabel(decks_to_string)
-
-    button_append_text = qt.QPushButton("Append Text")
-    button_append_text.clicked.connect(lambda: increment_count(label))
-
-    button_add_card = qt.QPushButton("Add sample card")
-    button_add_card.clicked.connect(lambda: add_sample_card(
-        col=col,
-        model=model,
-        deck=deck,
-        card=sample_card
-    ))
-
-    # layout
     layout = qt.QVBoxLayout()
-    layout.addWidget(label)
-    layout.addWidget(button_append_text)
-    layout.addWidget(button_add_card)
+
+    layout.addWidget(qt.QLabel("Deck:"))
+    deck_options = qt.QComboBox()
+    deck_names = [deck['name'] for deck in col.decks.all()]
+    deck_options.addItems(deck_names)
+    layout.addWidget(deck_options)
+
+    layout.addWidget(qt.QLabel("Source Lang:"))
+    source_options = qt.QComboBox()
+    source_options.addItems(lang.value for lang in Language)
+    layout.addWidget(source_options)
+
+    layout.addWidget(qt.QLabel("Target Lang:"))
+    target_options = qt.QComboBox()
+    target_options.addItems(lang.value for lang in Language)
+    layout.addWidget(target_options)
+
+    layout.addWidget(qt.QLabel("Word:"))
+    word_input = qt.QLineEdit()
+    word_input.setPlaceholderText("Enter word to translate")
+    layout.addWidget(word_input)
+
+    search_button = qt.QPushButton("Search in dictionary (and add to deck)")
+    search_button.clicked.connect(lambda: on_search_clicked(
+        col=col,
+        deck_input=deck_options.currentText(),
+        source_lang_input=source_options.currentText(),
+        target_lang_input=target_options.currentText(),
+        word_input=word_input.text(),
+    ))
+    layout.addWidget(search_button)
 
     # window
     window = qt.QDialog(mw)
-    window.setWindowTitle("custom window")
+    window.setWindowTitle("Dictionary Flashcard Editor")
     window.resize(400, 300)
     window.setLayout(layout)
     window.exec()
 
 
-count = 0
-def increment_count(label: qt.QLabel):
-    global count
-    count += 1
-    label.setText(label.text() + " " + str(count))
+def on_search_clicked(*,
+        col: Collection,
+        deck_input: str,
+        source_lang_input: str,
+        target_lang_input: str,
+        word_input: str
+    ):
+    deck = col.decks.by_name(deck_input)
+    if deck is None:
+        return
+
+    query = VocabCardQuery(
+        # TODO: add safe get_by_value method to enum
+        # (this will raise an error if the value doesnt exist)
+        source_lang=Language(source_lang_input),
+        target_lang=Language(target_lang_input),
+        word=word_input
+    )
+    print(f"starting query for {str(query)}")
+
+    # blocking call
+    result = generate_flashcard(query.source_lang, query.target_lang, query.word)
+    if result is None:
+        show_critical("Failed to generate flashcard")
+        return
+
+    # TODO: show result to user to confirm, instead of adding the card right away
+    add_sample_card(
+        col=col,
+        model=col.models.current(),
+        deck=deck,
+        card=result
+    )
+    show_info(f"new card added to {deck['name']}")
 
 
 def add_sample_card(*,
@@ -80,11 +105,11 @@ def add_sample_card(*,
         deck: DeckDict,
         card: VocabCard
     ):
+    if len(model['flds']) != 2:
+        raise RuntimeError(f"Model must have two fields: {model}")
+
     note = col.new_note(model)
     note.fields = [card.word, str(card)]  # this depends heavily on the model
 
-    print(f"new_note: {note}")
-
     # TODO: check for duplicates first
     col.add_note(note, deck['id'])
-    show_info(f"Note for '{card.word}' added to deck '{deck['name']}'")

@@ -6,15 +6,15 @@ class Language(Enum):
     """
     All supported languages
     """
-    EN = "EN"
-    ES = "ES"
-    IT = "IT"
-    FR = "FR"
+    EN = "English"
+    ES = "Español"
+    IT = "Italiano"
+    FR = "Français"
 
     @property
     def wordreference_code(self):
         # wordreference uses lowercase codes
-        return self.value.lower()
+        return self.name.lower()
 
     def __repr__(self):
         return self.name
