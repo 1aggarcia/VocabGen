@@ -16,12 +16,12 @@ TIMEOUT_SECONDS = 5
 
 
 def generate_flashcard(
-        source_lang: Language,
-        target_lang: Language,
+        lang: Language,
+        translation_lang: Language,
         word: str
     ) -> Optional[VocabCard]:
     # consider scraping a large sum of words at once instead of on the spot
-    query = VocabCardQuery(source_lang, target_lang, word)
+    query = VocabCardQuery(word, lang, translation_lang)
     url = _format_wordreference_url(query)
     try:
         print(f"querying {url}")
@@ -34,7 +34,7 @@ def generate_flashcard(
 
 
 def _format_wordreference_url(query: VocabCardQuery) -> str:
-    lang_route = query.source_lang.wordreference_code + query.target_lang.wordreference_code
+    lang_route = query.lang.wordreference_code + query.translation_lang.wordreference_code
     return f"{WORD_REFERENCE_DOMAIN}/{lang_route}/{query.word}"
 
 
@@ -50,7 +50,7 @@ def _parse_wordreference_page(
     # using .next to get only the first text element and not all text
     first_translation = translations[1].next
 
-    examples: ResultSet = webpage.find_all("td", { "class": "ToEx" })
+    examples: ResultSet = webpage.find_all("td", { "class": "FrEx" })
     does_example_exist = len(examples) > 0
     if not does_example_exist:
         print(f"No example sentences found for query: {query}")
@@ -58,8 +58,8 @@ def _parse_wordreference_page(
     first_example = examples[0].text if does_example_exist else "N/A"
 
     return VocabCard(
-        source_lang=query.source_lang,
-        target_lang=query.target_lang,
+        lang=query.translation_lang,
+        translation_lang=query.lang,
         word=query.word,
         translation=first_translation,
         example_sentence=first_example,

@@ -30,27 +30,27 @@ def open_editor(mw: AnkiQt):
     deck_options.addItems(deck_names)
     layout.addWidget(deck_options)
 
-    layout.addWidget(qt.QLabel("Source Lang:"))
-    source_options = qt.QComboBox()
-    source_options.addItems(lang.value for lang in Language)
-    layout.addWidget(source_options)
-
-    layout.addWidget(qt.QLabel("Target Lang:"))
-    target_options = qt.QComboBox()
-    target_options.addItems(lang.value for lang in Language)
-    layout.addWidget(target_options)
-
     layout.addWidget(qt.QLabel("Word:"))
     word_input = qt.QLineEdit()
     word_input.setPlaceholderText("Enter word to translate")
     layout.addWidget(word_input)
 
+    layout.addWidget(qt.QLabel("Language of word:"))
+    lang_options = qt.QComboBox()
+    lang_options.addItems(lang.value for lang in Language)
+    layout.addWidget(lang_options)
+
+    layout.addWidget(qt.QLabel("Language to translate to:"))
+    translation_options = qt.QComboBox()
+    translation_options.addItems(lang.value for lang in Language)
+    layout.addWidget(translation_options)
+
     search_button = qt.QPushButton("Search in dictionary (and add to deck)")
     search_button.clicked.connect(lambda: on_search_clicked(
         col=col,
         deck_input=deck_options.currentText(),
-        source_lang_input=source_options.currentText(),
-        target_lang_input=target_options.currentText(),
+        lang_input=lang_options.currentText(),
+        translation_lang_input=translation_options.currentText(),
         word_input=word_input.text(),
     ))
     layout.addWidget(search_button)
@@ -66,29 +66,29 @@ def open_editor(mw: AnkiQt):
 def on_search_clicked(*,
         col: Collection,
         deck_input: str,
-        source_lang_input: str,
-        target_lang_input: str,
-        word_input: str
+        word_input: str,
+        lang_input: str,
+        translation_lang_input: str
     ):
     deck = col.decks.by_name(deck_input)
     if deck is None:
         return
 
-    source_lang = Language.lookup(source_lang_input)
-    target_lang = Language.lookup(target_lang_input)
+    lang = Language.lookup(lang_input)
+    translation_lang = Language.lookup(translation_lang_input)
 
-    if source_lang is None or target_lang is None:
-        raise ValueError(f"Language(s) does not exist: {source_lang} | {target_lang}")
+    if lang is None or translation_lang is None:
+        raise ValueError(f"Language(s) does not exist: {lang} | {translation_lang}")
 
     query = VocabCardQuery(
-        source_lang=source_lang,
-        target_lang=target_lang,
+        translation_lang=translation_lang,
+        lang=lang,
         word=word_input
     )
     print(f"starting query for {str(query)}")
 
     # blocking call
-    result = generate_flashcard(query.source_lang, query.target_lang, query.word)
+    result = generate_flashcard(query.lang, query.translation_lang, query.word)
     if result is None:
         show_critical("Failed to generate flashcard")
         return
@@ -100,7 +100,7 @@ def on_search_clicked(*,
         deck=deck,
         card=result
     )
-    show_info(f"new card added to {deck['name']}")
+    show_info(f"new card added to {deck['name']}: \n{result}")
 
 
 def add_sample_card(*,

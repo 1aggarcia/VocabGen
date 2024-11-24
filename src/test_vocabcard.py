@@ -25,15 +25,15 @@ class TestLanguage(unittest.TestCase):
 class TestVocabCard(unittest.TestCase):
     def test_str_returns_html(self):
         test_card = VocabCard(
-            source_lang=Language.EN,
-            target_lang=Language.IT,
             word="ring",
+            lang=Language.EN,
             translation="anello",
+            translation_lang=Language.IT,
             example_sentence="Yvonne ha realizzato un bell'anello d'argento.",
             ipa_transcription="N/A"
         )
         expected = (
-            "<h1>anello</h1>"
+            "<h2>anello</h2>"
             + "<i>N/A</i>"
             + "<p>Yvonne ha realizzato un bell'anello d'argento.</p>"
         )

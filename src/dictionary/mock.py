@@ -12,8 +12,8 @@ def generate_flashcard(
     ) -> Optional[VocabCard]:
     return VocabCard(
         word=word,
-        source_lang=source_lang,
-        target_lang=target_lang,
+        lang=source_lang,
+        translation_lang=target_lang,
         translation="translation",
         ipa_transcription="/ipa/",
         example_sentence="the quick brown fox jumps over the lazy dog"

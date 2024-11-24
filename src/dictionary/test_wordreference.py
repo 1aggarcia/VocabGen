@@ -10,18 +10,18 @@ from .test_data import REAL_PAGE_NEVICARE, REAL_PAGE_WORD_NOT_FOUND, HTML_NO_EXA
 
 
 EXAMPLE_CARD = VocabCard(
-    source_lang=Language.ES,
-    target_lang=Language.IT,
+    lang=Language.ES,
     word="nevar",
+    translation_lang=Language.IT,
     translation="nevicare",
-    example_sentence="Sta ancora nevicando fuori?",
+    example_sentence="¿Ya está nevando?",
     ipa_transcription=""
 )
 
 
 EXAMPLE_QUERY = VocabCardQuery(
-    source_lang=EXAMPLE_CARD.source_lang,
-    target_lang=EXAMPLE_CARD.target_lang,
+    translation_lang=EXAMPLE_CARD.lang,
+    lang=EXAMPLE_CARD.translation_lang,
     word=EXAMPLE_CARD.word
 )
 
@@ -36,17 +36,18 @@ def parse_shorthand(html: str, query: VocabCardQuery):
 class TestFormatWordReferenceUrl(unittest.TestCase):
     def test_basic(self):
         result = wordreference._format_wordreference_url(
-            VocabCardQuery(Language.ES, Language.IT, "palabra")
+            VocabCardQuery("palabra", Language.ES, Language.IT)
         )
         self.assertEqual(result, "https://www.wordreference.com/esit/palabra")
+
 
 class TestParseWordreferencePage(unittest.TestCase):
     def test_returns_correct_inputs_when_good_page(self):
         result = parse_shorthand(REAL_PAGE_NEVICARE, EXAMPLE_QUERY)
         assert result is not None
 
-        self.assertEqual(result.source_lang, EXAMPLE_CARD.source_lang)
-        self.assertEqual(result.target_lang, EXAMPLE_CARD.target_lang)
+        self.assertEqual(result.lang, EXAMPLE_CARD.lang)
+        self.assertEqual(result.translation_lang, EXAMPLE_CARD.translation_lang)
         self.assertEqual(result.word, EXAMPLE_CARD.word)
 
     def test_returns_correct_translation_when_good_page(self):
