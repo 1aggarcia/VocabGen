@@ -67,7 +67,7 @@ class VocabCard:
 
     def __str__(self):
         return (
-            f"<h2>{self.translation}</h2>"
-            f"<i>{self.ipa_transcription}</i>"
-            f"<p>{self.example_sentence}</p>"
+            f"<h2>{self.word}</h2>"
+            f"<p>{self.ipa_transcription}</p>"
+            f"<i>({self.lang.wordreference_code}) {self.example_sentence}</i>"
         )

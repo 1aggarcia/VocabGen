@@ -16,10 +16,6 @@ from .dictionary import generate_flashcard
 def main(mw: AnkiQt):
     # QAction constructor below causes segmentation fault
     # comment these lines out to run unit tests
-    action = qt.QAction("test dictionary directly", mw)
-    qt.qconnect(action.triggered, on_test_dictionary)
-    mw.form.menuTools.addAction(action)
-
     action = qt.QAction("Enter New Vocab Word", mw)
     qt.qconnect(action.triggered, lambda: open_editor(mw))
     mw.form.menuTools.addAction(action)

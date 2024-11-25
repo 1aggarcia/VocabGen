@@ -15,13 +15,13 @@ EXAMPLE_CARD = VocabCard(
     translation_lang=Language.IT,
     translation="nevicare",
     example_sentence="¿Ya está nevando?",
-    ipa_transcription=""
+    ipa_transcription="[neˈβar]"
 )
 
 
 EXAMPLE_QUERY = VocabCardQuery(
-    translation_lang=EXAMPLE_CARD.lang,
-    lang=EXAMPLE_CARD.translation_lang,
+    translation_lang=EXAMPLE_CARD.translation_lang,
+    lang=EXAMPLE_CARD.lang,
     word=EXAMPLE_CARD.word
 )
 
@@ -60,6 +60,11 @@ class TestParseWordreferencePage(unittest.TestCase):
         assert result is not None
         self.assertEqual(result.example_sentence, EXAMPLE_CARD.example_sentence)
 
+    def test_returns_correct_pronunciation_when_good_page(self):
+        result = parse_shorthand(REAL_PAGE_NEVICARE, EXAMPLE_QUERY)
+        assert result is not None
+        self.assertEqual(result.ipa_transcription, EXAMPLE_CARD.ipa_transcription)
+
     def test_returns_none_when_word_not_found(self):
         result = parse_shorthand(REAL_PAGE_WORD_NOT_FOUND, EXAMPLE_QUERY)
         self.assertIsNone(result)
@@ -69,3 +74,4 @@ class TestParseWordreferencePage(unittest.TestCase):
         assert result is not None
         self.assertEqual(result.translation, "palabra")
         self.assertEqual(result.example_sentence, "N/A")
+        self.assertEqual(result.ipa_transcription, "N/A")

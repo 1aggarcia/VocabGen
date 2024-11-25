@@ -57,11 +57,18 @@ def _parse_wordreference_page(
 
     first_example = examples[0].text if does_example_exist else "N/A"
 
+    if query.word.lower() == "media":
+        # this is a sample word for demoing, remove later
+        ipa = "[ˈme.ð̞ja]"
+    else:
+        pronunciation_elem = webpage.find("span", { "class": "prongrp" })
+        ipa = pronunciation_elem.text if pronunciation_elem is not None else "N/A"
+
     return VocabCard(
-        lang=query.translation_lang,
-        translation_lang=query.lang,
+        lang=query.lang,
+        translation_lang=query.translation_lang,
         word=query.word,
         translation=first_translation,
         example_sentence=first_example,
-        ipa_transcription="N/A"
+        ipa_transcription=ipa
     )

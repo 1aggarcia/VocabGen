@@ -32,7 +32,7 @@ def open_editor(mw: AnkiQt):
 
     layout.addWidget(qt.QLabel("Word:"))
     word_input = qt.QLineEdit()
-    word_input.setPlaceholderText("Enter word to translate")
+    word_input.setPlaceholderText("Enter word to be studied")
     layout.addWidget(word_input)
 
     layout.addWidget(qt.QLabel("Language of word:"))
@@ -85,6 +85,7 @@ def on_search_clicked(*,
         lang=lang,
         word=word_input
     )
+    print("QUERY " + str(query))
     print(f"starting query for {str(query)}")
 
     # blocking call
@@ -93,6 +94,7 @@ def on_search_clicked(*,
         show_critical("Failed to generate flashcard")
         return
 
+    print("CARD " + str(result))
     # TODO: show result to user to confirm, instead of adding the card right away
     add_sample_card(
         col=col,
@@ -113,7 +115,8 @@ def add_sample_card(*,
         raise RuntimeError(f"Model must have two fields: {model}")
 
     note = col.new_note(model)
-    note.fields = [card.word, str(card)]  # this depends heavily on the model
+    # this depends heavily on the model
+    note.fields = [str(card), f"({card.translation_lang.wordreference_code}) {card.translation}"]
 
     # TODO: check for duplicates first
     col.add_note(note, deck['id'])
